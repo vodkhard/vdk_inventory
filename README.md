@@ -16,7 +16,7 @@
 
 ## Usage
 
-- For users : Press '**K**' to show the menu
+- For users : Press your Replay Help Button (usually '**K**') to show the menu
 - For developers : Use "**player:receiveItem**" and "**player:looseItem**" events with the item id and quantity as parameters events to add or remove items from the inventory
 
 ## Thanks
