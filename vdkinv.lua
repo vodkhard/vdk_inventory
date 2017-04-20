@@ -76,8 +76,7 @@ end
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
-        if IsControlJustPressed(1, Keys["K"]) then
-            Chat("K pressed")
+        if IsControlJustPressed(1, 311) then
             InventoryMenu() -- Menu to draw
             Menu.hidden = not Menu.hidden -- Hide/Show the menu
         end
