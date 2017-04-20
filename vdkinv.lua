@@ -81,15 +81,10 @@ Citizen.CreateThread(function()
             Menu.hidden = not Menu.hidden -- Hide/Show the menu
         end
         Menu.renderGUI() -- Draw menu on each tick if Menu.hidden = false
-
-        -- Pour test l'ajout
-        --[[if IsControlJustPressed(1, Keys["L"]) then
-            Chat("L pressed")
-            TriggerEvent("player:receiveItem", 5, 22)
-        elseif IsControlJustPressed(1, Keys["M"]) then
-            Chat("M pressed")
-            TriggerEvent("player:looseItem", 7, 2)
-        end]]--
+        if IsEntityDead(PlayerPedId()) then
+            RegisterNetEvent("item:Reset")
+            TriggerServerEvent("item:Reset")
+        end
     end
 end)
 
