@@ -23,13 +23,6 @@ CREATE TABLE `items` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-# Affichage de la table users
-# ------------------------------------------------------------
-
-ALTER TABLE `users`
-ADD PRIMARY KEY (`identifier`);
-
-
 # Affichage de la table user_inventory
 # ------------------------------------------------------------
 
@@ -41,6 +34,5 @@ CREATE TABLE `user_inventory` (
   `quantity` int(11) DEFAULT NULL,
   PRIMARY KEY (`user_id`,`item_id`),
   KEY `item_id` (`item_id`),
-  CONSTRAINT `user_inventory_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`identifier`),
   CONSTRAINT `user_inventory_ibfk_2` FOREIGN KEY (`item_id`) REFERENCES `items` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
