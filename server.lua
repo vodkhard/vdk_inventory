@@ -5,9 +5,9 @@ RegisterServerEvent("item:getItems")
 RegisterServerEvent("item:updateQuantity")
 RegisterServerEvent("item:setItem")
 RegisterServerEvent("item:reset")
+RegisterServerEvent("item:sell")
 
 local items = {}
-
 
 AddEventHandler("item:getItems", function()
     items = {}
@@ -53,5 +53,13 @@ AddEventHandler("item:reset", function()
                 MySQL:executeQuery("UPDATE user_inventory SET `quantity` = @qty WHERE `user_id` = '@username' AND `item_id` = @id", { ['@username'] = player, ['@qty'] = 0, ['@id'] = tonumber(v.item_id) })
             end
         end
+    end)
+end)
+
+AddEventHandler("item:sell", function(id, qty, price)
+    TriggerEvent('es:getPlayerFromId', source, function(user)
+        local player = user.identifier
+        MySQL:executeQuery("UPDATE user_inventory SET `quantity` = @qty WHERE `user_id` = '@username' AND `item_id` = @id", { ['@username'] = player, ['@qty'] = tonumber(qty), ['@id'] = tonumber(id) })
+        user:addMoney(tonumber(price))
     end)
 end)

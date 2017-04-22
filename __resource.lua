@@ -6,3 +6,5 @@ client_script {
 	'vdkinv.lua',
 	'GUI.lua'
 }
+
+export 'getQuantity'

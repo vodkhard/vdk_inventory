@@ -29,6 +29,22 @@ AddEventHandler("player:looseItem", function(item, quantity)
     end
 end)
 
+AddEventHandler("player:sellItem", function(item, price)
+    item = tonumber(item)
+    if (ITEMS[item].quantity > 0) then
+        sell({ item, price })
+    end
+end)
+
+function sell(arg)
+    local itemId = tonumber(arg[1])
+    local price = arg[2]
+    local item = ITEMS[itemId]
+    item.quantity = item.quantity - 1
+    RegisterNetEvent("item:sell")
+    TriggerServerEvent("item:sell", itemId, item.quantity, price)
+end
+
 function delete(arg)
     local itemId = tonumber(arg[1])
     local qty = arg[2]
@@ -53,6 +69,10 @@ function new(item, quantity)
     RegisterNetEvent("item:setItem")
     TriggerServerEvent("item:setItem", item, quantity)
     TriggerServerEvent("item:getItems")
+end
+
+function getQuantity(itemId)
+    return ITEMS[tonumber(itemId)].quantity
 end
 
 function InventoryMenu()
@@ -82,8 +102,8 @@ Citizen.CreateThread(function()
         end
         Menu.renderGUI() -- Draw menu on each tick if Menu.hidden = false
         if IsEntityDead(PlayerPedId()) then
-            RegisterNetEvent("item:Reset")
-            TriggerServerEvent("item:Reset")
+            RegisterNetEvent("item:reset")
+            TriggerServerEvent("item:reset")
         end
     end
 end)
