@@ -27,7 +27,7 @@ end)
 AddEventHandler("item:setItem", function(item, quantity)
     local player = getPlayerID(source)
     MySQL:executeQuery("INSERT INTO user_inventory (`user_id`, `item_id`, `quantity`) VALUES ('@player', @item, @qty)",
-            { ['@player'] = user.identifier, ['@item'] = item, ['@qty'] = quantity })
+            { ['@player'] = player, ['@item'] = item, ['@qty'] = quantity })
 end)
 
 AddEventHandler("item:updateQuantity", function(qty, id)
@@ -47,9 +47,11 @@ AddEventHandler("item:reset", function()
 end)
 
 AddEventHandler("item:sell", function(id, qty, price)
-    local player = getPlayerID(source)
-    MySQL:executeQuery("UPDATE user_inventory SET `quantity` = @qty WHERE `user_id` = '@username' AND `item_id` = @id", { ['@username'] = player, ['@qty'] = tonumber(qty), ['@id'] = tonumber(id) })
-    user:addMoney(tonumber(price))
+    TriggerEvent('es:getPlayerFromId', source, function(user)
+        local player = user.identifier
+        MySQL:executeQuery("UPDATE user_inventory SET `quantity` = @qty WHERE `user_id` = '@username' AND `item_id` = @id", { ['@username'] = player, ['@qty'] = tonumber(qty), ['@id'] = tonumber(id) })
+        user:addMoney(tonumber(price))
+    end)
 end)
 
 -- get's the player id without having to use bugged essentials
