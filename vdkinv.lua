@@ -1,11 +1,30 @@
 ITEMS = {}
+-- flag to keep track of whether player died to prevent
+-- multiple runs of player dead code
+local playerdead = false
 
+-- register events, only needs to be done once
+RegisterNetEvent("item:reset")
+RegisterNetEvent("item:getItems")
+RegisterNetEvent("item:updateQuantity")
+RegisterNetEvent("item:setItem")
+RegisterNetEvent("item:sell")
+    
+function sell(arg)
+    local itemId = tonumber(arg[1])
+    local price = arg[2]
+    local item = ITEMS[itemId]
+    item.quantity = item.quantity - 1
+    TriggerServerEvent("item:sell", itemId, item.quantity, price)
+end
+
+-- handles when a player spawns either from joining or after death
 AddEventHandler("playerSpawned", function()
-    RegisterNetEvent("item:getItems")
     TriggerServerEvent("item:getItems")
+    -- reset player dead flag
+    playerdead = false
 end)
 
-RegisterNetEvent("gui:getItems")
 AddEventHandler("gui:getItems", function(THEITEMS)
     ITEMS = {}
     ITEMS = THEITEMS
@@ -50,7 +69,6 @@ function delete(arg)
     local qty = arg[2]
     local item = ITEMS[itemId]
     item.quantity = item.quantity - qty
-    RegisterNetEvent("item:updateQuantity")
     TriggerServerEvent("item:updateQuantity", item.quantity, itemId)
     InventoryMenu()
 end
@@ -60,13 +78,11 @@ function add(arg)
     local qty = arg[2]
     local item = ITEMS[itemId]
     item.quantity = item.quantity + qty
-    RegisterNetEvent("item:updateQuantity")
     TriggerServerEvent("item:updateQuantity", item.quantity, itemId)
     InventoryMenu()
 end
 
 function new(item, quantity)
-    RegisterNetEvent("item:setItem")
     TriggerServerEvent("item:setItem", item, quantity)
     TriggerServerEvent("item:getItems")
 end
@@ -102,12 +118,17 @@ Citizen.CreateThread(function()
         end
         Menu.renderGUI() -- Draw menu on each tick if Menu.hidden = false
         if IsEntityDead(PlayerPedId()) then
-            RegisterNetEvent("item:reset")
-            TriggerServerEvent("item:reset")
+            PlayerIsDead()
+            -- prevent the death check from overloading the server
+            playerdead = true
         end
     end
 end)
 
-function Chat(debugg)
-    TriggerEvent("chatMessage", '', { 0, 0x99, 255 }, tostring(debugg))
+function PlayerIsDead()
+    -- do not run if already ran
+    if playerdead then 
+        return
+    end
+    TriggerServerEvent("item:reset")
 end

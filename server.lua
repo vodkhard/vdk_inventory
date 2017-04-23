@@ -9,57 +9,62 @@ RegisterServerEvent("item:sell")
 
 local items = {}
 
+
 AddEventHandler("item:getItems", function()
     items = {}
-    TriggerEvent('es:getPlayerFromId', source, function(user)
-        local player = user.identifier
-        local executed_query = MySQL:executeQuery("SELECT * FROM user_inventory JOIN items ON `user_inventory`.`item_id` = `items`.`id` WHERE user_id = '@username'", { ['@username'] = player })
-        local result = MySQL:getResults(executed_query, { 'quantity', 'libelle', 'item_id' }, "item_id")
-        if (result) then
-            for _, v in ipairs(result) do
-                print('-----------------')
-                print(v.item_id)
-                print(v.libelle)
-                print(v.quantity)
-                t = { ["quantity"] = v.quantity, ["libelle"] = v.libelle }
-                table.insert(items, tonumber(v.item_id), t)
-            end
+    local player = getPlayerID(source)
+    local executed_query = MySQL:executeQuery("SELECT * FROM user_inventory JOIN items ON `user_inventory`.`item_id` = `items`.`id` WHERE user_id = '@username'", { ['@username'] = player })
+    local result = MySQL:getResults(executed_query, { 'quantity', 'libelle', 'item_id' }, "item_id")
+    if (result) then
+        for _, v in ipairs(result) do
+            t = { ["quantity"] = v.quantity, ["libelle"] = v.libelle }
+            table.insert(items, tonumber(v.item_id), t)
         end
-    end)
+    end
     TriggerClientEvent("gui:getItems", source, items)
 end)
 
 AddEventHandler("item:setItem", function(item, quantity)
-    TriggerEvent('es:getPlayerFromId', source, function(user)
-        MySQL:executeQuery("INSERT INTO user_inventory (`user_id`, `item_id`, `quantity`) VALUES ('@player', @item, @qty)",
+    local player = getPlayerID(source)
+    MySQL:executeQuery("INSERT INTO user_inventory (`user_id`, `item_id`, `quantity`) VALUES ('@player', @item, @qty)",
             { ['@player'] = user.identifier, ['@item'] = item, ['@qty'] = quantity })
-    end)
 end)
 
 AddEventHandler("item:updateQuantity", function(qty, id)
-    TriggerEvent('es:getPlayerFromId', source, function(user)
-        local player = user.identifier
-        MySQL:executeQuery("UPDATE user_inventory SET `quantity` = @qty WHERE `user_id` = '@username' AND `item_id` = @id", { ['@username'] = player, ['@qty'] = tonumber(qty), ['@id'] = tonumber(id) })
-    end)
+    local player = getPlayerID(source)
+    MySQL:executeQuery("UPDATE user_inventory SET `quantity` = @qty WHERE `user_id` = '@username' AND `item_id` = @id", { ['@username'] = player, ['@qty'] = tonumber(qty), ['@id'] = tonumber(id) })
 end)
 
 AddEventHandler("item:reset", function()
-    TriggerEvent('es:getPlayerFromId', playerId, function(user)
-        local player = user.identifier
-        local executed_query = MySQL:executeQuery("SELECT * FROM user_inventory JOIN items ON `user_inventory`.`item_id` = `items`.`id` WHERE user_id = '@username'", { ['@username'] = player })
-        local result = MySQL:getResults(executed_query, { 'quantity', 'libelle', 'item_id' }, "item_id")
-        if (result) then
-            for _, v in ipairs(result) do
-                MySQL:executeQuery("UPDATE user_inventory SET `quantity` = @qty WHERE `user_id` = '@username' AND `item_id` = @id", { ['@username'] = player, ['@qty'] = 0, ['@id'] = tonumber(v.item_id) })
-            end
+    local player = getPlayerID(source)
+    local executed_query = MySQL:executeQuery("SELECT * FROM user_inventory JOIN items ON `user_inventory`.`item_id` = `items`.`id` WHERE user_id = '@username'", { ['@username'] = player })
+    local result = MySQL:getResults(executed_query, { 'quantity', 'libelle', 'item_id' }, "item_id")
+    if (result) then
+        for _, v in ipairs(result) do
+            MySQL:executeQuery("UPDATE user_inventory SET `quantity` = @qty WHERE `user_id` = '@username' AND `item_id` = @id", { ['@username'] = player, ['@qty'] = 0, ['@id'] = tonumber(v.item_id) })
         end
-    end)
+    end
 end)
 
 AddEventHandler("item:sell", function(id, qty, price)
-    TriggerEvent('es:getPlayerFromId', source, function(user)
-        local player = user.identifier
-        MySQL:executeQuery("UPDATE user_inventory SET `quantity` = @qty WHERE `user_id` = '@username' AND `item_id` = @id", { ['@username'] = player, ['@qty'] = tonumber(qty), ['@id'] = tonumber(id) })
-        user:addMoney(tonumber(price))
-    end)
+    local player = getPlayerID(source)
+    MySQL:executeQuery("UPDATE user_inventory SET `quantity` = @qty WHERE `user_id` = '@username' AND `item_id` = @id", { ['@username'] = player, ['@qty'] = tonumber(qty), ['@id'] = tonumber(id) })
+    user:addMoney(tonumber(price))
 end)
+
+-- get's the player id without having to use bugged essentials
+function getPlayerID(source)
+    local identifiers = GetPlayerIdentifiers(source)
+    local player = getIdentifiant(identifiers)
+    return player
+end
+
+-- gets the actual player id unique to the player,
+-- independent of whether the player changes their screen name
+function getIdentifiant(id)
+
+    for _, v in ipairs(id) do
+        return v
+    end
+
+end
