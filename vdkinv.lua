@@ -9,14 +9,6 @@ RegisterNetEvent("item:getItems")
 RegisterNetEvent("item:updateQuantity")
 RegisterNetEvent("item:setItem")
 RegisterNetEvent("item:sell")
-    
-function sell(arg)
-    local itemId = tonumber(arg[1])
-    local price = arg[2]
-    local item = ITEMS[itemId]
-    item.quantity = item.quantity - 1
-    TriggerServerEvent("item:sell", itemId, item.quantity, price)
-end
 
 -- handles when a player spawns either from joining or after death
 AddEventHandler("playerSpawned", function()
@@ -60,7 +52,6 @@ function sell(arg)
     local price = arg[2]
     local item = ITEMS[itemId]
     item.quantity = item.quantity - 1
-    RegisterNetEvent("item:sell")
     TriggerServerEvent("item:sell", itemId, item.quantity, price)
 end
 
