@@ -9,6 +9,7 @@ RegisterNetEvent("item:getItems")
 RegisterNetEvent("item:updateQuantity")
 RegisterNetEvent("item:setItem")
 RegisterNetEvent("item:sell")
+RegisterNetEvent("gui:getItems")
 
 -- handles when a player spawns either from joining or after death
 AddEventHandler("playerSpawned", function()
@@ -35,8 +36,6 @@ AddEventHandler("player:looseItem", function(item, quantity)
     item = tonumber(item)
     if (ITEMS[item].quantity >= quantity) then
         delete({ item, quantity })
-    else
-        Chat("Vous n'avez pas assez de ressources")
     end
 end)
 
