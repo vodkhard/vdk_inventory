@@ -27,7 +27,7 @@ end)
 AddEventHandler("item:setItem", function(item, quantity)
     local player = getPlayerID(source)
     MySQL:executeQuery("INSERT INTO user_inventory (`user_id`, `item_id`, `quantity`) VALUES ('@player', @item, @qty)",
-            { ['@player'] = player, ['@item'] = item, ['@qty'] = quantity })
+        { ['@player'] = player, ['@item'] = item, ['@qty'] = quantity })
 end)
 
 AddEventHandler("item:updateQuantity", function(qty, id)
@@ -37,13 +37,7 @@ end)
 
 AddEventHandler("item:reset", function()
     local player = getPlayerID(source)
-    local executed_query = MySQL:executeQuery("SELECT * FROM user_inventory JOIN items ON `user_inventory`.`item_id` = `items`.`id` WHERE user_id = '@username'", { ['@username'] = player })
-    local result = MySQL:getResults(executed_query, { 'quantity', 'libelle', 'item_id' }, "item_id")
-    if (result) then
-        for _, v in ipairs(result) do
-            MySQL:executeQuery("UPDATE user_inventory SET `quantity` = @qty WHERE `user_id` = '@username' AND `item_id` = @id", { ['@username'] = player, ['@qty'] = 0, ['@id'] = tonumber(v.item_id) })
-        end
-    end
+    MySQL:executeQuery("UPDATE user_inventory SET `quantity` = @qty WHERE `user_id` = '@username'", { ['@username'] = player, ['@qty'] = 0 })
 end)
 
 AddEventHandler("item:sell", function(id, qty, price)
@@ -64,9 +58,7 @@ end
 -- gets the actual player id unique to the player,
 -- independent of whether the player changes their screen name
 function getIdentifiant(id)
-
     for _, v in ipairs(id) do
         return v
     end
-
 end

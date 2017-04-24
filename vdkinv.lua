@@ -2,6 +2,7 @@ ITEMS = {}
 -- flag to keep track of whether player died to prevent
 -- multiple runs of player dead code
 local playerdead = false
+local maxCapacity = 64
 
 -- register events, only needs to be done once
 RegisterNetEvent("item:reset")
@@ -52,6 +53,7 @@ function sell(arg)
     local item = ITEMS[itemId]
     item.quantity = item.quantity - 1
     TriggerServerEvent("item:sell", itemId, item.quantity, price)
+    InventoryMenu()
 end
 
 function delete(arg)
@@ -79,6 +81,14 @@ end
 
 function getQuantity(itemId)
     return ITEMS[tonumber(itemId)].quantity
+end
+
+function notFull()
+    local pods = 0
+    for _, v in pairs(ITEMS) do
+        pods = pods + v.quantity
+    end
+    if (pods < maxCapacity) then return true end
 end
 
 function InventoryMenu()
@@ -117,7 +127,7 @@ end)
 
 function PlayerIsDead()
     -- do not run if already ran
-    if playerdead then 
+    if playerdead then
         return
     end
     TriggerServerEvent("item:reset")

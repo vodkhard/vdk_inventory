@@ -8,3 +8,4 @@ client_script {
 }
 
 export 'getQuantity'
+export 'notFull'
