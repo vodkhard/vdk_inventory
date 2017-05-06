@@ -11,6 +11,9 @@ RegisterNetEvent("item:updateQuantity")
 RegisterNetEvent("item:setItem")
 RegisterNetEvent("item:sell")
 RegisterNetEvent("gui:getItems")
+RegisterNetEvent("player:receiveItem")
+RegisterNetEvent("player:looseItem")
+RegisterNetEvent("player:sellItem")
 
 -- handles when a player spawns either from joining or after death
 AddEventHandler("playerSpawned", function()
@@ -25,11 +28,13 @@ AddEventHandler("gui:getItems", function(THEITEMS)
 end)
 
 AddEventHandler("player:receiveItem", function(item, quantity)
-    item = tonumber(item)
-    if (ITEMS[item] == nil) then
-        new(item, quantity)
-    else
-        add({ item, quantity })
+    if (getPods() + quantity <= maxCapacity) then
+        item = tonumber(item)
+        if (ITEMS[item] == nil) then
+            new(item, quantity)
+        else
+            add({ item, quantity })
+        end
     end
 end)
 
@@ -83,17 +88,21 @@ function getQuantity(itemId)
     return ITEMS[tonumber(itemId)].quantity
 end
 
-function notFull()
+function getPods()
     local pods = 0
     for _, v in pairs(ITEMS) do
         pods = pods + v.quantity
     end
-    if (pods < maxCapacity) then return true end
+    return pods
+end
+
+function notFull()
+    if (getPods() < maxCapacity) then return true end
 end
 
 function InventoryMenu()
     ped = GetPlayerPed(-1);
-    MenuTitle = "Items:"
+    MenuTitle = "Items: " .. (getPods() or 0) .. "/" .. maxCapacity
     ClearMenu()
     for ind, value in pairs(ITEMS) do
         if (value.quantity > 0) then
@@ -103,10 +112,26 @@ function InventoryMenu()
 end
 
 function ItemMenu(itemId)
-    MenuTitle = "Details:"
     ClearMenu()
-    Menu.addButton("Supprimer 1", "delete", { itemId, 1 })
-    Menu.addButton("Ajouter 1", "add", { itemId, 1 })
+    MenuTitle = "Details:"
+    Menu.addButton("Donner", "give", itemId)
+end
+
+function give(item)
+    local player = getNearPlayer()
+    if (player ~= nil) then
+        DisplayOnscreenKeyboard(1, "Quantité :", "", "", "", "", "", 2)
+        while (UpdateOnscreenKeyboard() == 0) do
+            DisableAllControlActions(0);
+            Wait(0);
+        end
+        if (GetOnscreenKeyboardResult()) then
+            local res = tonumber(GetOnscreenKeyboardResult())
+            if (ITEMS[item].quantity - res >= 0) then
+                TriggerServerEvent("player:giveItem", item, ITEMS[item].libelle, res, GetPlayerServerId(player))
+            end
+        end
+    end
 end
 
 Citizen.CreateThread(function()
@@ -131,4 +156,35 @@ function PlayerIsDead()
         return
     end
     TriggerServerEvent("item:reset")
+end
+
+function getPlayers()
+    local playerList = {}
+    for i = 0, 32 do
+        local player = GetPlayerFromServerId(i)
+        if NetworkIsPlayerActive(player) then
+            table.insert(playerList, player)
+        end
+    end
+    return playerList
+end
+
+function getNearPlayer()
+    local players = getPlayers()
+    local pos = GetEntityCoords(GetPlayerPed(-1))
+    local pos2
+    local distance
+    local minDistance = 3
+    local playerNear
+    for _, player in pairs(players) do
+        pos2 = GetEntityCoords(GetPlayerPed(player))
+        distance = GetDistanceBetweenCoords(pos["x"], pos["y"], pos["z"], pos2["x"], pos2["y"], pos2["z"], true)
+        if (pos ~= pos2 and distance < minDistance) then
+            playerNear = player
+            minDistance = distance
+        end
+    end
+    if (minDistance < 3) then
+        return playerNear
+    end
 end
