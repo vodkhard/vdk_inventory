@@ -120,7 +120,7 @@ end
 function give(item)
     local player = getNearPlayer()
     if (player ~= nil) then
-        DisplayOnscreenKeyboard(1, "Quantité :", "", "", "", "", "", 2)
+        DisplayOnscreenKeyboard(1, "Quantité :", "", "", "", "", "", 30)
         while (UpdateOnscreenKeyboard() == 0) do
             DisableAllControlActions(0);
             Wait(0);
