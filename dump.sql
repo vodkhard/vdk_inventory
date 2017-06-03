@@ -4,12 +4,6 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-
--- Export de la structure de la base pour gta5_gamemode_essential
-DROP DATABASE IF EXISTS `gta5_gamemode_essential`;
-CREATE DATABASE IF NOT EXISTS `gta5_gamemode_essential` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `gta5_gamemode_essential`;
-
 -- Export de la structure de la table gta5_gamemode_essential. items
 DROP TABLE IF EXISTS `items`;
 CREATE TABLE IF NOT EXISTS `items` (
