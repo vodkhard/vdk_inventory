@@ -75,7 +75,9 @@ function Menu.updateSelection()
 			Menu.selection = Menu.from
 		end
 	elseif IsControlJustPressed(1, Keys["NENTER"])  then
-		MenuCallFunction(Menu.GUI[Menu.selection +1]["func"], Menu.GUI[Menu.selection +1]["args"])
+		if Menu.buttonCount > 0 then
+			MenuCallFunction(Menu.GUI[Menu.selection +1]["func"], Menu.GUI[Menu.selection +1]["args"])
+		end
 	end
 	local iterator = 0
 	for id, settings in ipairs(Menu.GUI) do
