@@ -156,7 +156,9 @@ function giveMoney()
         end
         if (GetOnscreenKeyboardResult()) then
             local res = tonumber(GetOnscreenKeyboardResult())
-            TriggerServerEvent("player:swapMoney", res, GetPlayerServerId(playerNear))
+            if res > 0 then
+                TriggerServerEvent("player:swapMoney", res, GetPlayerServerId(playerNear))
+            end
         end
     end
 end
