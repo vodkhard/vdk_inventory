@@ -2,9 +2,9 @@ server_scripts {
 	'server.lua'
 }
 client_script {
-	'vdkinv.lua',
 	'GUI.lua',
-	'anims.lua'
+	'client/vdkinv.lua',
+	'client/anims.lua',
 }
 
 export 'getQuantity'

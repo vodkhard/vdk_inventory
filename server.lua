@@ -7,6 +7,7 @@ RegisterServerEvent("item:reset")
 RegisterServerEvent("item:sell")
 RegisterServerEvent("player:giveItem")
 RegisterServerEvent("player:swapMoney")
+RegisterServerEvent("player:getInfos")
 
 local items = {}
 
@@ -74,6 +75,21 @@ AddEventHandler("player:swapMoney", function(amount, target)
     end)
 end)
 
+AddEventHandler("player:getInfos", function()
+    MySQL.Async.fetchAll("SELECT name, number FROM users WHERE identifier = @player",
+    {['@player'] = getPlayerID(source)},
+    function(infos)
+        nameSplit = stringSplit(infos[1].name, " ")
+        local prenom = nameSplit[1]
+        local nom = nameSplit[2]
+        TriggerClientEvent("player:setInfos", source, prenom, nom, infos[1].number)
+    end)
+end)
+
+AddEventHandler("player:showIdCard", function(infos, target)
+    TriggerClientEvent("player:seeIdCard", target, infos)
+end)
+
 -- get's the player id without having to use bugged essentials
 function getPlayerID(source)
     local identifiers = GetPlayerIdentifiers(source)
@@ -87,4 +103,15 @@ function getIdentifiant(id)
     for _, v in ipairs(id) do
         return v
     end
+end
+
+function stringSplit(self, delimiter)
+  local a = self:Split(delimiter)
+  local t = {}
+
+  for i = 0, #a - 1 do
+     table.insert(t, a[i])
+  end
+
+  return t
 end

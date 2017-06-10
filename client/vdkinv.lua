@@ -101,18 +101,10 @@ end
 
 function give(item)
     local player = getNearPlayer()
-    if (player ~= nil) then
-    DisplayOnscreenKeyboard(p0, windowTitle, p2, defaultText, defaultConcat1, defaultConcat2, defaultConcat3, maxInputLength)
-        DisplayOnscreenKeyboard(1, "FMMC_MPM_NA", "", "", "", "", "", 30)
-        while (UpdateOnscreenKeyboard() == 0) do
-            DisableAllControlActions(0)
-            Wait(0);
-        end
-        if (GetOnscreenKeyboardResult()) then
-            local res = tonumber(GetOnscreenKeyboardResult())
-            if (ITEMS[item].quantity - res >= 0) then
-                TriggerServerEvent("player:giveItem", item, ITEMS[item].libelle, res, GetPlayerServerId(player))
-            end
+    if player then
+        local res = DisplayInput()
+        if (ITEMS[item].quantity - res >= 0) then
+            TriggerServerEvent("player:giveItem", item, ITEMS[item].libelle, res, GetPlayerServerId(player))
         end
     end
 end
@@ -146,7 +138,7 @@ function use(val)
     end
 end
 
-function giveMoney()
+function GiveMoney()
     local playerNear = getNearPlayer()
     if playerNear then
         DisplayOnscreenKeyboard(1, "FMMC_MPM_NA", "", "", "", "", "", 30)
@@ -207,7 +199,7 @@ function PersonnalMenu()
     ClearMenu()
     Menu.addButton("Inventaire", "InventoryMenu", nil)
     Menu.addButton("Animations", "animsMenu", nil)
-    Menu.addButton("Donner argent", "giveMoney", nil)
+    Menu.addButton("Donner argent", "GiveMoney", nil)
 end
 
 function InventoryMenu()
@@ -228,6 +220,17 @@ function ItemMenu(val)
     MenuTitle="Details :"
     Menu.addButton("Donner", "give", itemId)
     Menu.addButton("Utiliser", "use", {itemId, canUse})
+    Menu.addButton("Mettre dans voiture", "PutInCoffre", itemId)
+end
+
+function PutInCoffre(itemId)
+    local vehFront = VehicleInFront()
+    if vehFront then
+        local qty = DisplayInput()
+        if (getQuantity(itemId) - qty >= 0) then
+            TriggerServerEvent("car:receiveItem", vehFront, itemId, ITEMS[itemId].libelle, qty)
+        end
+    end
 end
 
 Citizen.CreateThread(function()
@@ -289,6 +292,25 @@ function getNearPlayer()
     end
     if (minDistance < 3) then
         return playerNear
+    end
+end
+
+function VehicleInFront()
+    local pos = GetEntityCoords(GetPlayerPed(-1))
+    local entityWorld = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), 0.0, 3.0, 0.0)
+    local rayHandle = CastRayPointToPoint(pos.x, pos.y, pos.z, entityWorld.x, entityWorld.y, entityWorld.z, 10, GetPlayerPed(-1), 0)
+    local a, b, c, d, result = GetRaycastResult(rayHandle)
+    return GetVehicleNumberPlateText(result)
+end
+
+function DisplayInput()
+    DisplayOnscreenKeyboard(1, "FMMC_MPM_TYP8", "", "", "", "", "", 30)
+    while UpdateOnscreenKeyboard() == 0 do
+        DisableAllControlActions(0)
+        Wait(1)
+    end
+    if (GetOnscreenKeyboardResult()) then
+        return tonumber(GetOnscreenKeyboardResult())
     end
 end
 
