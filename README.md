@@ -25,6 +25,4 @@ https://forum.fivem.net/t/release-gui-script-v0-8
 
 _For the menu_
 
-## Notes
-
-It's my first LUA script so please be indulgent with me and all valuable proposals are more than welcome.
+## If you want to support me and my work : [Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=B3ZE4W8Y626MA)
