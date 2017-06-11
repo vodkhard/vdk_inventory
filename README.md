@@ -2,6 +2,8 @@
 
 > Resources for FiveM allowing the user to access to an inventory and for developpers to add and remove items from the inventory. It's a resource more for developers.
 
+## If you want to support me and my work : :moneybag:[Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=B3ZE4W8Y626MA):moneybag:
+
 ## Requirements
 
 - **EssentialMode**
@@ -28,5 +30,3 @@ _For the menu_
 ## Notes
 
 It's my first LUA script so please be indulgent with me and all valuable proposals are more than welcome.
-
-## If you want to support me and my work : :moneybag:[Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=B3ZE4W8Y626MA):moneybag:
